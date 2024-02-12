@@ -1,5 +1,6 @@
 // Uncomment the code below and write your tests
-import { doStuffByTimeout, doStuffByInterval } from '.';
+import { doStuffByTimeout, doStuffByInterval, readFileAsynchronously } from '.';
+import path from 'path';
 
 describe('doStuffByTimeout', () => {
   jest.useFakeTimers();
@@ -53,16 +54,27 @@ describe('doStuffByInterval', () => {
   });
 });
 
-// describe('readFileAsynchronously', () => {
-//   test('should call join with pathToFile', async () => {
-//     // Write your test here
-//   });
+describe('readFileAsynchronously', () => {
+  const pathToFixture = '__fixtures__/file.txt';
 
-//   test('should return null if file does not exist', async () => {
-//     // Write your test here
-//   });
+  test('should call join with pathToFile', async () => {
+    const joinSpy = jest.spyOn(path, 'join');
 
-//   test('should return file content if file exists', async () => {
-//     // Write your test here
-//   });
-// });
+    await readFileAsynchronously(pathToFixture);
+
+    expect(joinSpy).toHaveBeenCalledWith(__dirname, pathToFixture);
+  });
+
+  test('should return null if file does not exist', async () => {
+    const result = await readFileAsynchronously('unexisted');
+
+    expect(result).toBeNull();
+  });
+
+  test('should return file content if file exists', async () => {
+    const fileContent = 'readme';
+
+    const result = await readFileAsynchronously(pathToFixture);
+    expect(result).toBe(fileContent);
+  });
+});
